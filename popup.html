@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YourTV</title>
+  <link rel="stylesheet" href="popup.css">
+  <script src="popup.js" defer></script>
+</head>
+<body>
+  <main>
+    <h1>YourTV</h1>
+    <p class="intro">Choose how YouTube loads.</p>
+
+    <fieldset>
+      <legend>Client mode</legend>
+      <label class="option">
+        <input type="radio" name="mode" value="tv">
+        <span>
+          <strong>TV client</strong>
+          <small>Open the official TVHTML5 application. Recommended.</small>
+        </span>
+      </label>
+      <label class="option">
+        <input type="radio" name="mode" value="js-test">
+        <span>
+          <strong>Kabuki JS swap</strong>
+          <small>Experimental: replace the desktop entry bundle only.</small>
+        </span>
+      </label>
+      <label class="option">
+        <input type="radio" name="mode" value="original">
+        <span>
+          <strong>Original YouTube</strong>
+          <small>Disable YourTV's request redirects.</small>
+        </span>
+      </label>
+    </fieldset>
+
+    <p id="warning" class="warning" hidden>
+      The JS test keeps the desktop HTML and CSS. Kabuki may not initialize
+      against that page. Switch back to TV client if the page fails.
+    </p>
+
+    <button id="apply" type="button">Apply mode</button>
+    <p id="status" role="status" aria-live="polite"></p>
+    <p class="note">Reload YouTube after changing modes.</p>
+  </main>
+</body>
+</html>

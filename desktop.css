@@ -1,0 +1,13 @@
+/* The TV client uses a small root size designed for television layouts.
+   Increase it gradually on wide desktop viewports without changing its components. */
+html {
+  font-size: clamp(10.225px, 0.68vw, 12.8px) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  ytlr-tile-renderer,
+  ytlr-guide-entry-renderer,
+  [role="button"] {
+    cursor: pointer;
+  }
+}

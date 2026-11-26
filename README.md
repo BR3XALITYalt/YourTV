@@ -1,6 +1,6 @@
 # YourTV
 
-YourTV is a Chrome extension that opens YouTube's existing TVHTML5 (Kabuki) client in desktop Chrome.
+YourTV is a Manifest V3 Chrome extension that adapts YouTube's existing TVHTML5 (Kabuki) client for desktop Chrome.
 
 ## Install
 
@@ -10,42 +10,39 @@ YourTV is a Chrome extension that opens YouTube's existing TVHTML5 (Kabuki) clie
 4. Select the folder containing `manifest.json`.
 5. Open `https://www.youtube.com/`.
 
-The default mode redirects top-level requests to the YouTube homepage to the official `/tv` route before the desktop homepage loads.
+The default mode redirects the YouTube homepage to the official `/tv` route. The desktop adaptation runs on that route and works with the real TV client rather than loading the desktop application underneath it.
+
+## Desktop adaptation
+
+- Detects repeated `ytlr-tile-renderer` and `ytlr-guide-entry-renderer` elements and applies desktop-friendly layout classes.
+- Uses a responsive tile grid on detected tile containers.
+- Reduces television-sized typography and spacing.
+- Adds visible keyboard focus and pointer cursors.
+- Press `/` to focus a visible search input.
+- Respects reduced-motion preferences.
+- Observes dynamically rendered content and reapplies enhancements.
+
+The adaptation intentionally uses Kabuki's existing custom elements and leaves its navigation, playback, authentication, and API behavior intact. YouTube can change its internal markup at any time, so the selectors may need maintenance.
 
 ## Modes
 
 ### TV client
-
-Redirects top-level requests to the YouTube homepage to `/tv`. YouTube then serves the matching TVHTML5 document, Kabuki application bundle, TV stylesheet, and TV player assets together. YourTV does not bundle or copy YouTube's JavaScript.
-
-A small stylesheet increases the TV client's root font size on wide desktop viewports. This is an initial sizing adjustment, not a complete desktop redesign.
+Redirects homepage requests to YouTube's official `/tv` route, preserving the matching TV document, bootstrap data, scripts, styles, and player assets.
 
 ### Kabuki JS swap (experimental)
-
-Leaves the normal desktop page in place and redirects its `ytmainappweb` JavaScript request to the Kabuki base bundle observed in the supplied TVHTML5 capture.
-
-This only replaces the main application bundle. It does not replace the desktop document, CSS, bootstrap configuration, component tree, or player setup. The two applications use different shells, so this mode may fail to initialize. The captured Kabuki asset URL is build-specific and may stop working when YouTube updates it.
+Replaces the desktop application's main JavaScript bundle with a captured Kabuki bundle. This does not replace the desktop document, CSS, bootstrap data, component tree, or player setup, so it may fail to initialize. The captured URL is build-specific.
 
 ### Original YouTube
-
 Removes YourTV's dynamic request rules and leaves the normal desktop client untouched.
 
 ## Scope and limitations
 
-- Manifest V3.
-- The extension changes navigation and script requests locally in Chrome.
-- It does not spoof the browser user agent.
-- It does not alter account authentication, video entitlements, DRM, ads, watch history, or YouTube API permissions.
-- It does not download, redistribute, or bundle YouTube's proprietary client assets.
-- Direct navigation to non-homepage desktop routes is not rewritten in this initial version. Once the TV client is open, its own navigation handles subsequent pages.
-- YouTube can change its internal routes, bundle paths, and markup without notice.
+- Manifest V3, no external dependencies.
+- Does not bundle or redistribute YouTube client assets.
+- Does not spoof browser identity.
+- Does not alter authentication, entitlements, DRM, ads, watch history, or API permissions.
+- Browser playback, authentication, navigation, and mouse/keyboard behavior still need testing in Chrome. This commit is an initial adaptation layer, not a claim of complete compatibility.
 
-## Terms and compatibility
+## Terms
 
-YouTube's Terms restrict modifying or interfering with parts of the service except where authorized. This project does not claim that YouTube has approved this adaptation. It does not aim to bypass access controls, advertising, DRM, or account restrictions.
-
-## Testing notes
-
-The source capture used for the Kabuki experiment identified the bundle as `kabuki.base_cr` and the desktop application bundle as `ytmainappweb.kevlar_base`. Those paths are internal implementation details, not stable public interfaces.
-
-Test each mode by opening a fresh YouTube tab and inspecting the document URL, loaded scripts, console, and playback. A successful redirect does not prove that all TV controls work well with a mouse and keyboard.
+YouTube's Terms restrict certain unauthorized modification or interference with the service. This project does not claim YouTube has approved the adaptation and does not aim to bypass access controls, advertising, DRM, or account restrictions.

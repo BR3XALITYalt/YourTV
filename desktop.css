@@ -1,13 +1,75 @@
-/* The TV client uses a small root size designed for television layouts.
-   Increase it gradually on wide desktop viewports without changing its components. */
-html {
-  font-size: clamp(10.225px, 0.68vw, 12.8px) !important;
+/* Desktop adaptation for the existing YouTube TVHTML5/Kabuki client. */
+html.yourtv-desktop {
+  color-scheme: dark;
+  font-size: clamp(11px, 0.78vw, 13px) !important;
+  scroll-behavior: smooth;
+  --yourtv-gap: clamp(12px, 1.25vw, 22px);
+  --yourtv-page-width: 1680px;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  ytlr-tile-renderer,
-  ytlr-guide-entry-renderer,
-  [role="button"] {
-    cursor: pointer;
+html.yourtv-desktop body {
+  min-width: 320px;
+  overflow-x: hidden;
+}
+
+html.yourtv-desktop ytlr-home,
+html.yourtv-desktop ytlr-browse,
+html.yourtv-desktop ytlr-search,
+html.yourtv-desktop ytlr-library {
+  box-sizing: border-box;
+  max-width: var(--yourtv-page-width);
+  margin-inline: auto;
+}
+
+html.yourtv-desktop .yourtv-tile-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
+  align-items: stretch;
+  gap: var(--yourtv-gap);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+html.yourtv-desktop .yourtv-tile-grid > ytlr-tile-renderer {
+  display: block !important;
+  width: auto !important;
+  min-width: 0;
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+html.yourtv-desktop ytlr-tile-renderer,
+html.yourtv-desktop ytlr-guide-entry-renderer {
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+@media (hover:hover) and (pointer:fine) {
+  html.yourtv-desktop ytlr-tile-renderer:hover,
+  html.yourtv-desktop ytlr-guide-entry-renderer:hover {
+    background-color: rgb(255 255 255 / 7%);
+  }
+}
+
+html.yourtv-desktop :is(ytlr-tile-renderer,ytlr-guide-entry-renderer,button,[role="button"],a,input):focus-visible {
+  outline: 2px solid #3ea6ff !important;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+@media (max-width:900px) {
+  html.yourtv-desktop .yourtv-tile-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 165px), 1fr));
+    gap: 12px;
+  }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  html.yourtv-desktop,
+  html.yourtv-desktop * {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }

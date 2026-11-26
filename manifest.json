@@ -1,32 +1,16 @@
 {
   "manifest_version": 3,
   "name": "YourTV",
-  "version": "0.1.0",
-  "description": "Use YouTube's TVHTML5 client in desktop Chrome.",
-  "permissions": [
-    "declarativeNetRequestWithHostAccess",
-    "storage"
-  ],
-  "host_permissions": [
-    "https://youtube.com/*",
-    "https://www.youtube.com/*"
-  ],
-  "background": {
-    "service_worker": "service-worker.js"
-  },
-  "action": {
-    "default_title": "YourTV",
-    "default_popup": "popup.html"
-  },
-  "content_scripts": [
-    {
-      "matches": [
-        "https://www.youtube.com/tv*"
-      ],
-      "css": [
-        "desktop.css"
-      ],
-      "run_at": "document_start"
-    }
-  ]
+  "version": "0.2.0",
+  "description": "Adapt YouTube's TVHTML5 client for desktop Chrome.",
+  "permissions": ["declarativeNetRequestWithHostAccess", "storage"],
+  "host_permissions": ["https://youtube.com/*", "https://www.youtube.com/*"],
+  "background": {"service_worker": "service-worker.js"},
+  "action": {"default_title": "YourTV", "default_popup": "popup.html"},
+  "content_scripts": [{
+    "matches": ["https://www.youtube.com/tv*"],
+    "js": ["adapt.js"],
+    "css": ["desktop.css"],
+    "run_at": "document_idle"
+  }]
 }

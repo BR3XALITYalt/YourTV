@@ -1,43 +1,62 @@
 (() => {
   "use strict";
+
   const TILE = "ytlr-tile-renderer";
+  const TILE_WRAPPER = "TXB27d";
   const GUIDE = "ytlr-guide-entry-renderer";
-  const GRID = "yourtv-tile-grid";
   let queued = false;
 
-  function directMatches(parent, selector) {
-    return [...parent.children].filter((node) => node.matches?.(selector));
-  }
+  function markTileRows() {
+    // Kabuki places each tile inside a div.TXB27d. The wrappers, not the
+    // custom tile elements, are the direct children of the virtual-list layer.
+    for (const tile of document.querySelectorAll(TILE)) {
+      const wrapper = tile.closest("." + TILE_WRAPPER);
+      const container = wrapper?.parentElement;
+      if (!wrapper || !container) continue;
 
-  function markRepeatedContainers(selector, className) {
-    for (const item of document.querySelectorAll(selector)) {
-      let parent = item.parentElement;
-      for (let depth = 0; parent && depth < 5; depth++, parent = parent.parentElement) {
-        if (directMatches(parent, selector).length >= 2) {
-          parent.classList.add(className);
-          break;
-        }
+      const tileWrappers = [...container.children].filter((child) =>
+        child.classList.contains(TILE_WRAPPER) && child.querySelector(TILE)
+      );
+
+      if (tileWrappers.length >= 2) {
+        container.classList.add("yourtv-tile-grid");
       }
     }
   }
 
-  function improveFocus(selector) {
+  function markGuideLists() {
+    for (const entry of document.querySelectorAll(GUIDE)) {
+      const wrapper = entry.closest("." + TILE_WRAPPER);
+      const container = wrapper?.parentElement;
+      if (!wrapper || !container) continue;
+
+      const entries = [...container.children].filter((child) =>
+        child.classList.contains(TILE_WRAPPER) && child.querySelector(GUIDE)
+      );
+
+      if (entries.length >= 2) container.classList.add("yourtv-guide-list");
+    }
+  }
+
+  function makeInteractive(selector) {
     for (const item of document.querySelectorAll(selector)) {
       item.style.setProperty("cursor", "pointer");
-      const hasFocusable = item.querySelector(
+      // Kabuki often manages focus on the custom element itself. Only add
+      // tabindex when it has no existing focus model or focusable descendant.
+      const focusableChild = item.querySelector(
         'a[href],button,input,select,textarea,[tabindex]:not([tabindex="-1"]),[role="button"]'
       );
-      if (!hasFocusable && !item.hasAttribute("tabindex")) item.tabIndex = 0;
+      if (!focusableChild && !item.hasAttribute("tabindex")) item.tabIndex = 0;
     }
   }
 
   function scan() {
     queued = false;
     document.documentElement.classList.add("yourtv-desktop");
-    markRepeatedContainers(TILE, GRID);
-    markRepeatedContainers(GUIDE, "yourtv-guide-list");
-    improveFocus(TILE);
-    improveFocus(GUIDE);
+    markTileRows();
+    markGuideLists();
+    makeInteractive(TILE);
+    makeInteractive(GUIDE);
   }
 
   function scheduleScan() {
@@ -48,20 +67,23 @@
 
   document.addEventListener("keydown", (event) => {
     if (event.key !== "/" || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+
     const target = event.target;
     if (target instanceof HTMLElement &&
         (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))) return;
+
     const search = document.querySelector(
-      'input[placeholder*="search" i],input[aria-label*="search" i],[role="search"] input'
+      'ytlr-search-text-box, input[placeholder*="search" i], input[aria-label*="search" i]'
     );
     if (search instanceof HTMLElement) {
       event.preventDefault();
+      search.click();
       search.focus();
     }
   }, true);
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", scheduleScan, {once:true});
+    document.addEventListener("DOMContentLoaded", scheduleScan, { once: true });
   } else {
     scheduleScan();
   }

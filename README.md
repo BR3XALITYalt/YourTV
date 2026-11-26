@@ -10,19 +10,21 @@ YourTV is a Manifest V3 Chrome extension that adapts YouTube's existing TVHTML5 
 4. Select the folder containing `manifest.json`.
 5. Open `https://www.youtube.com/`.
 
-The default mode redirects the YouTube homepage to the official `/tv` route. The desktop adaptation runs on that route and works with the real TV client rather than loading the desktop application underneath it.
+The default mode redirects the YouTube homepage to the official `/tv` route. The adaptation runs on the real TV client.
 
 ## Desktop adaptation
 
-- Detects repeated `ytlr-tile-renderer` and `ytlr-guide-entry-renderer` elements and applies desktop-friendly layout classes.
-- Uses a responsive tile grid on detected tile containers.
-- Reduces television-sized typography and spacing.
-- Adds visible keyboard focus and pointer cursors.
-- Press `/` to focus a visible search input.
-- Respects reduced-motion preferences.
-- Observes dynamically rendered content and reapplies enhancements.
+The supplied Kabuki HTML capture shows video tiles nested as `.NUDen > .TXB27d > ytlr-tile-renderer`. YourTV detects those wrappers and applies a responsive grid to containers holding multiple tile wrappers.
 
-The adaptation intentionally uses Kabuki's existing custom elements and leaves its navigation, playback, authentication, and API behavior intact. YouTube can change its internal markup at any time, so the selectors may need maintenance.
+It also:
+- Increases the root font size from the TV-oriented baseline to a desktop-oriented responsive scale.
+- Removes fixed inline tile widths and margins within detected grids.
+- Makes tile thumbnails maintain a 16:9 aspect ratio.
+- Adds pointer feedback and visible keyboard focus.
+- Provides a `/` shortcut to activate the search control.
+- Observes dynamically inserted content.
+
+YouTube can change its internal markup. This adaptation is based on the supplied capture and still requires live Chrome testing.
 
 ## Modes
 
@@ -41,7 +43,7 @@ Removes YourTV's dynamic request rules and leaves the normal desktop client unto
 - Does not bundle or redistribute YouTube client assets.
 - Does not spoof browser identity.
 - Does not alter authentication, entitlements, DRM, ads, watch history, or API permissions.
-- Browser playback, authentication, navigation, and mouse/keyboard behavior still need testing in Chrome. This commit is an initial adaptation layer, not a claim of complete compatibility.
+- Browser playback, authentication, navigation, and mouse/keyboard behavior still need testing in Chrome.
 
 ## Terms
 
